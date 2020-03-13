@@ -1,10 +1,20 @@
 """bot.py
+
+Author: Gabriel Carrizo
 """
+import datetime
+import importlib
+
 import discord
-from src.dice import parse_rolls_to_string, roll_character
+import src.dice
+
+with open('token') as f:
+    TOKEN = f.read()
+
+CLIENT = discord.Client()
 
 def send_help(message):
-    msg = 'Available commands:\n' \
+    msg = '```Available commands:\n' \
               '"!roll [N]d[D]", rolls N dice with D faces and returns sum and sequence. \n'\
               '  optional:\n'\
               '   - dl: drop lowest\n'\
@@ -16,35 +26,49 @@ def send_help(message):
               '  optional:\n'\
               '    - [N]d[D], determines the stat generation strategy.\n'\
               '    - dl/d[n]l/dh/d[n]h, see options for !roll.\n' \
-              '  example: !rollme 6d6 d2l dh'
+              '  example: !rollme 6d6 d2l dh```'
     msg = '> ' + message.content + '\n' + msg
     return msg
 
-def log(inmsg, outmsg):
-    print('Received message from {}: "{}"\nReplied with:\n {}'.format(
-        inmsg.author.name, inmsg.content, outmsg
-    ))
+def log_message(inmsg):
+    timestamp = '{:%Y-%m-%d_%H-%M-%S}'.format(datetime.datetime.now())
+    log_message = timestamp + ': Received message\nfrom: {}-{}: "{}"'.format(
+        inmsg.guild.name,
+        inmsg.channel.name,
+        inmsg.author.name,
+        inmsg.content
+    )
+    return  log_message
 
+def log_action(outmsg):
+    timestamp = '{:%Y-%m-%d_%H-%M-%S}'.format(datetime.datetime.now())
 
+    if outmsg:
+        log_message = '\nReplied with:\n {}'.format(
+            outmsg
+        )
+    else:
+        log_message = 'NO ACTION'
 
-with open('token') as f:
-    TOKEN = f.read()
+    return log_message
 
-client = discord.Client()
-
-@client.event
+@CLIENT.event
 async def on_message(message):
+
     # we do not want the bot to reply to itself
-    if message.author == client.user:
+    if message.author == CLIENT.user:
+        return
+    # we dont care about messages that dont start with '!'
+    if message.content[0] != '!':
         return
 
+    log = log_message(message)
+
     channel = message.channel
-    
     argument = message.content.split(' ')
 
     command = argument[0]
     options = argument[1:]
-
     # Send help to specific user
     if command == '!rollbothelp':
         msg = send_help(message)
@@ -56,21 +80,34 @@ async def on_message(message):
             msg = 'Incorrect format. Required format "!roll NdD", ex: "!roll 4d6"'
         else:
             # quote input message + output
-            msg = '> ' + message.content + '\n' + parse_rolls_to_string(options)
-
-        await channel.send(msg)
-
-    # Generate character
-    elif command == '!rollme':
-        # quote input message + output
-        msg = '> ' + message.author.name + ': ' + message.content + '\n' + roll_character(options)
+            msg = '> ' + message.author.name + ': '+ \
+                message.content + '\n' + src.dice.parse_rolls_to_string(options)
         await channel.send(msg)
         
-@client.event
+    # !rollme - Generate character
+    elif command == '!rollme':
+        # quote input message + output
+        msg = '> ' + message.author.name + ': ' + message.content + \
+            '\n' + src.dice.roll_character(options)
+        await channel.send(msg)
+
+    # Ignore logging commands that are not for rollbot
+    else:
+        return
+    
+    log += log_action(msg)
+
+    print(log)
+   
+@CLIENT.event
 async def on_ready():
     print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
+    print(CLIENT.user.name)
+    print(CLIENT.user.id)
     print('------')
 
-client.run(TOKEN)
+def main():
+    CLIENT.run(TOKEN)
+
+if __name__ == '__main__':
+    main()

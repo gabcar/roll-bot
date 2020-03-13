@@ -67,6 +67,8 @@ def parse_rolls(args):
     """
     try: 
         n, d = args[0].split('d')
+        if int(n) > 500:
+            return 'Too many dice (d >= 500)'
         rolls = roll_dice(int(n),int(d))
     except:
         return 'Invalid input format ("!roll NdD" Ex: "!roll 4d6")'
@@ -113,11 +115,18 @@ def parse_options(rolls, option):
 
 @is_message    
 def roll_character(args):
+    """Rolls character stats
+    
+    Args:
+        args (str): Stat generation strategy from message (default 4d6 dl)
+    
+    Returns:
+        str: Message to return to user
+    """
+    c = Character()
     if args:
-        c = Character()
         c.roll_stats(args)
     else:
-        c = Character()
         c.roll_stats(['4d6', 'dl'])
     return c.__str__()
 
@@ -147,7 +156,7 @@ class Rolls():
         else: 
             drop = ''
 
-        return rolls + s + drop
+        return '```' + rolls + s + drop + '```'
     
     def append(self, s):
         self.rolls.append(s)
@@ -190,6 +199,9 @@ class Character:
         s = ''
 
         for stat in self.stats:
-            s += stat + ': ' + str(self.stats[stat]) + '\n'
+            s += stat + ': ' + str(self.stats[stat]) + ' | '
+        s = s[:-3]
+
+        s = '```' + s + '```'
 
         return s
