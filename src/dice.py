@@ -1,4 +1,4 @@
-import numpy as np
+import random
 
 def is_message(func):
     """Function decorator that ensures that the
@@ -25,7 +25,7 @@ def dice(d):
     Returns:
         int: [1, d]
     """
-    return np.random.randint(1, d+1)
+    return random.randint(1, d)
 
 def roll_dice(n, d):
     """rolls n (int) dice with value d (int)
@@ -130,6 +130,12 @@ def roll_character(args):
         c.roll_stats(['4d6', 'dl'])
     return c.__str__()
 
+def argmax(xs):
+    return max(enumerate(xs), key=lambda x: x[1])[0]
+
+def argmin(xs):
+    return min(enumerate(xs), key=lambda x: x[1])[0]
+
 class Rolls():
     """Class for managing an array of rolls.
 
@@ -166,12 +172,12 @@ class Rolls():
 
     def drop_lowest(self):
         self.dropped.append(
-            self.rolls.pop(np.argmin(self.rolls))
+            self.rolls.pop(argmin(self.rolls))
         )
 
     def drop_highest(self):
         self.dropped.append(
-            self.rolls.pop(np.argmax(self.rolls))
+            self.rolls.pop(argmax(self.rolls))
         )
     
     def drop(self, instruction):
