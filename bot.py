@@ -15,18 +15,21 @@ CLIENT = discord.Client()
 
 def send_help(message):
     msg = '```Available commands:\n' \
-              '"!roll [N]d[D]", rolls N dice with D faces and returns sum and sequence. \n'\
+              '"!roll [N]d[D]", rolls N (<500) dice with D faces and returns sum and sequence. \n'\
               '  optional:\n'\
               '   - dl: drop lowest\n'\
               '   - d[n]l: drop n lowest\n'\
               '   - dh: drop highest\n'\
               '   - d[n]h: drop n highest\n'\
-              '  example: !roll 6d6 dl d2h \n'\
+              '   - +/-[N]d[D]\n'\
+              '   - +/-i, where i is an integer\n'\
+              '  example: !roll 6d6 dl d2h +4 \n'\
               '"!rollme", rolls 6 character stats with 4d6 drop lowest strategy for each stat.\n'\
               '  optional:\n'\
-              '    - [N]d[D], determines the stat generation strategy.\n'\
+              '    - [N]d[D], determines the stat generation strategy. (4d6 default)\n'\
               '    - dl/d[n]l/dh/d[n]h, see options for !roll.\n' \
-              '  example: !rollme 6d6 d2l dh```'
+              '    - +/-[N]d[D], see options for !roll.' 
+              '  example: !rollme 6d6 d2l +4d4 dh```'
     msg = '> ' + message.content + '\n' + msg
     return msg
 

@@ -84,7 +84,7 @@ def do_roll_instruction(rolls, instruction):
 
     if n < 0 or d < 0:
         raise IndexError('No negative roll numbers or dice types allowed')
-    elif n > 500:
+    elif n >= 500:
         raise IndexError('Maximum dice restricted to <= 500')
 
     rolls.add(roll_dice(n, d))
@@ -171,7 +171,10 @@ def parse_rolls_to_string(args):
     Returns:
         str: outgoing message
     """    
-    return perform_instruction(Rolls([]), args).__str__()
+    try:
+        return perform_instruction(Rolls([]), args).__str__()
+    except:
+        return '```Incorrect format, check !rollbothelp for list of commands.```'
 
 def perform_instruction(rolls, options, rd=0):
     """Parses inputs from discord message to roll
@@ -186,6 +189,8 @@ def perform_instruction(rolls, options, rd=0):
     d[n]l - drop n lowest 
     dh - drop highest
     d[n]h - drop n highest
+    +[N]d[D] - Adds a separate roll to the tally
+    -[N]d[D] - subtracts a roll from the tally
     
     Args:
         options (str): input from discord message
