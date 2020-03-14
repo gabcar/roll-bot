@@ -1,4 +1,5 @@
 import random
+import re
 
 def is_message(func):
     """Function decorator that ensures that the
@@ -15,6 +16,120 @@ def is_message(func):
         assert isinstance(returned_value, str)
         return returned_value
     return func_wrapper
+
+def is_roll_instruction(instruction):
+    """returns True if instruction is XdY
+
+    Args:
+        instruction (bool): True if instruction is XdY where X and Y are ints
+    """
+
+    if re.match('^\d+[d]\d+$', instruction):
+        return True
+    else: 
+        return False
+
+def is_drop_instruction(instruction):
+    """returns True if instruction is XdY
+
+    Args:
+        instruction (bool): True if instruction is XdY where X and Y are ints
+
+    Returns:
+        bool: True if drop instruction
+    """
+
+    if re.match('^[d][hl]$', instruction):
+        return True
+    elif re.match('^[d]\d+[lh]$', instruction): 
+        return True
+    else:
+        return False
+
+def is_math_expression(instruction):
+    """Returns True if the instructions contains a
+    mathematical expression
+
+    Args:
+        instruction ([type]): [description]
+
+    Returns:
+        bool: True if instruction is math expr.
+    """
+    # +/-i
+    if re.match('^[\+\-]\d+$', instruction):
+        return True
+    # +/-NdD
+    elif re.match('^[\+\-]\d+[d]\d+$', instruction):
+        return True
+    else:
+        return False
+
+def do_roll_instruction(rolls, instruction):
+    """Parses roll instruction from 'NdD' to int(N) and int(D)
+    
+    Args:
+        instruction (str): roll instruction
+    
+    Raises:
+        IndexError: 
+    
+    Returns:
+        [type]: [description]
+    """
+    n, d = instruction.split('d')
+
+    n = int(n)
+    d = int(d)
+
+    if n < 0 or d < 0:
+        raise IndexError('No negative roll numbers or dice types allowed')
+    elif n > 500:
+        raise IndexError('Maximum dice restricted to <= 500')
+
+    rolls.add(roll_dice(n, d))
+    
+    return rolls
+
+def do_drop_instruction(rolls, instruction):
+    """Parses drop instruction from 'dNl/h' to function 
+    
+    Args:
+        instruction (str): roll instruction
+
+    Returns:
+        int, str: number of drops to make, which type to drop ('l' or 'h')
+    """ 
+    drop_type = instruction[-1]
+
+    if len(instruction) > 2:
+        n = int(instruction[1:-1])
+    else:
+        n = 1
+
+    for _ in range(n):
+        rolls.drop(drop_type)
+
+    return rolls
+
+def do_math_instruction(rolls, instruction):
+
+    if re.match('^[\+]\d+$', instruction):
+        rolls.add(int(instruction[1:]))
+
+    elif re.match('^[\-]\d+$', instruction):
+        rolls.subtract(int(instruction[1:]))
+
+    elif re.match('^\+\d+[d]\d+$', instruction):
+        rolls.add(do_roll_instruction(Rolls([]), instruction[1:]))
+
+    elif re.match('^\-\d+[d]\d+$', instruction):
+        rolls.subtract(do_roll_instruction(Rolls([]), instruction[1:]))
+
+    else:
+        return # TODO: Error here
+    
+    return rolls
 
 def dice(d):
     """A dice module that rolls a dice with d sides.
@@ -45,7 +160,20 @@ def roll_dice(n, d):
 
     return r
 
-def parse_rolls(args):
+@is_message
+def parse_rolls_to_string(args):
+    """Parses rolls to string
+    
+    Args:
+        args str: string with roll settings/options
+        (ex '4d6 dl')
+    
+    Returns:
+        str: outgoing message
+    """    
+    return perform_instruction(Rolls([]), args).__str__()
+
+def perform_instruction(rolls, options, rd=0):
     """Parses inputs from discord message to roll
     a specific number of dice with additional options.
 
@@ -63,27 +191,30 @@ def parse_rolls(args):
         options (str): input from discord message
     
     Returns:
-        str : Bot message
+        Rolls : total rolls
     """
-    try: 
-        n, d = args[0].split('d')
-        if int(n) > 500:
-            return 'Too many dice (d >= 500)'
-        rolls = roll_dice(int(n),int(d))
-    except:
-        return 'Invalid input format ("!roll NdD" Ex: "!roll 4d6")'
 
-    if len(args) > 1:
-        for o in args[1:]:
-            error = parse_options(rolls, o)
-            if error: 
-                return error
+    if not options:
+        return rolls
 
-    return rolls
+    if rd == 0 and not is_roll_instruction(options[0]):
+        raise IndexError('Incorrect format. see !rollbothelp for instructions')
 
-@is_message
-def parse_rolls_to_string(args):
-    return parse_rolls(args).__str__()
+    if is_roll_instruction(options[0]):
+        rolls = do_roll_instruction(rolls, options[0])
+        return perform_instruction(rolls, options[1:], rd+1)
+
+    elif is_drop_instruction(options[0]):
+        
+        rolls = do_drop_instruction(rolls, options[0])
+        return perform_instruction(rolls, options[1:], rd+1)
+
+    elif is_math_expression(options[0]):
+        rolls = do_math_instruction(rolls, options[0])
+        return perform_instruction(rolls, options[1:], rd+1)
+
+    else: 
+        raise IndexError('Incorrect option {}'.format(options[0]))
 
 def parse_options(rolls, option):
     """Parses the options of the discord message
@@ -131,9 +262,25 @@ def roll_character(args):
     return c.__str__()
 
 def argmax(xs):
+    """argmax because stdlib does not have argmax
+    
+    Args:
+        xs (list): list or array of rolls
+    
+    Returns:
+        int: index of the first greatest value of the list
+    """    
     return max(enumerate(xs), key=lambda x: x[1])[0]
 
 def argmin(xs):
+    """argmin because stdlib does not have argmin
+    
+    Args:
+        xs (list): list or array of rolls
+    
+    Returns:
+        int: index of the first lowest value of the list
+    """    
     return min(enumerate(xs), key=lambda x: x[1])[0]
 
 class Rolls():
@@ -147,6 +294,7 @@ class Rolls():
                 
         self.rolls = rolls
         self.dropped = []
+        self.bias = 0
 
     def __repr__(self):        
         return ', '.join(self.rolls)
@@ -167,8 +315,24 @@ class Rolls():
     def append(self, s):
         self.rolls.append(s)
 
+    def add(self, s):
+        if isinstance(s, int):
+            self.bias += s
+        elif isinstance(s, list):
+            self.rolls.extend(s)
+        elif isinstance(s, Rolls):
+            self.rolls.extend(s.rolls)
+    
+    def subtract(self, s):
+        if isinstance(s, int):
+            self.bias -= s
+        elif isinstance(s, list):
+            self.rolls.extend([-i for i in s])
+        elif isinstance(s, Rolls):
+            self.rolls.extend([-i for i in s.rolls])
+
     def sum(self):
-        return sum(self.rolls)
+        return sum(self.rolls) + self.bias
 
     def drop_lowest(self):
         self.dropped.append(
@@ -196,9 +360,9 @@ class Character:
                       'WIS': 0,
                       'CHA': 0}
 
-    def roll_stats(self, command):
+    def roll_stats(self, instructions):
         for stat in self.stats:
-            rolls = parse_rolls(command)
+            rolls = perform_instruction(Rolls([]), instructions)
             self.stats[stat] = rolls.sum()
     
     def __str__(self):
@@ -211,3 +375,66 @@ class Character:
         s = '```' + s + '```'
 
         return s
+
+if __name__ == '__main__':
+    assert is_roll_instruction('4d6') == True
+    assert is_roll_instruction('20d5') == True
+    assert is_roll_instruction('2d50') == True
+    assert is_roll_instruction('40d50') == True
+    assert is_roll_instruction('4D6') == False
+    assert is_roll_instruction('dl') == False
+    assert is_roll_instruction('dh') == False
+    assert is_roll_instruction('+') == False
+    assert is_roll_instruction('-') == False
+    assert is_roll_instruction('+4d6') == False
+    assert is_roll_instruction('-4d6') == False
+    assert is_roll_instruction('bajs') == False
+
+    assert is_drop_instruction('dl') == True
+    assert is_drop_instruction('dh') == True
+    assert is_drop_instruction('d2l') == True
+    assert is_drop_instruction('d2h') == True
+    assert is_drop_instruction('d2hl') == False
+    assert is_drop_instruction('d2lh') == False
+    assert is_drop_instruction('d20l') == True
+    assert is_drop_instruction('d20h') == True
+    assert is_drop_instruction('4d20ls') == False
+    assert is_drop_instruction('4d20') == False
+    assert is_drop_instruction('bajs') == False
+
+    assert is_math_expression('+4') == True
+    assert is_math_expression('-4') == True
+    assert is_math_expression('+4d4') == True
+    assert is_math_expression('-4d4') == True
+    assert is_math_expression('+4') == True
+    assert is_math_expression('4d6') == False
+    assert is_math_expression('dl') == False
+    assert is_math_expression('d6l') == False
+    assert is_math_expression('-') == False
+    assert is_math_expression('+') == False
+    assert is_math_expression('bajs') == False
+
+    # rolls = Rolls([])
+    # rolls.add([1, 2, 3, 4, 5, 6])
+
+    # do_drop_instruction(rolls, 'd2l')
+    # assert rolls.sum() == sum([3, 4, 5, 6])
+
+    # do_drop_instruction(rolls, 'd2h')
+    # assert rolls.sum() == sum([3, 4])
+
+    # do_drop_instruction(rolls, 'dh')
+    # assert rolls.sum() == sum([3])
+
+    # do_drop_instruction(rolls, 'dl')
+    # assert rolls.sum() == 0
+
+    # do_math_instruction(rolls, '+4')
+    # assert rolls.sum() == 4
+
+    # rolls.add([1, 2, 3, 4, 5, 6])
+
+    print(parse_rolls_to_string(['4d6', 'dl', 'dh', '-4d4', '+10']))
+    c = Character()
+    c.roll_stats(['4d6', 'dl'])
+    print(c)
