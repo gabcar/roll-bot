@@ -28,7 +28,7 @@ def send_help(message):
               '  optional:\n'\
               '    - [N]d[D], determines the stat generation strategy. (4d6 default)\n'\
               '    - dl/d[n]l/dh/d[n]h, see options for !roll.\n' \
-              '    - +/-[N]d[D], see options for !roll.' 
+              '    - +/-[N]d[D], see options for !roll.' \
               '  example: !rollme 6d6 d2l +4d4 dh```'
     msg = '> ' + message.content + '\n' + msg
     return msg
