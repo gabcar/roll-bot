@@ -35,9 +35,17 @@ def send_help(message):
 
 def log_message(inmsg):
     timestamp = '{:%Y-%m-%d_%H-%M-%S}'.format(datetime.datetime.now())
+    try:
+        guild = inmsg.guild.name
+        channel = inmsg.channel.name
+    except AttributeError:
+        guild = ''
+        channel = 'DM'
+    
+
     log_message = timestamp + ': Received message\nfrom: {}-{}: "{}"'.format(
-        inmsg.guild.name,
-        inmsg.channel.name,
+        guild,
+        channel,
         inmsg.author.name,
         inmsg.content
     )
@@ -57,7 +65,6 @@ def log_action(outmsg):
 
 @CLIENT.event
 async def on_message(message):
-
     # we do not want the bot to reply to itself
     if message.author == CLIENT.user:
         return
