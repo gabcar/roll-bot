@@ -1,0 +1,36 @@
+,CP,SP,EP,GP,PP
+Coins,-,-,-,4d6 X 1000,5d6 x 100
+d100,Gems or Art Objects,Magic Items
+01-03,-,-
+04-06,2d4 250 gp art objects,-
+07-10,2d4 750 gp art objects,-
+11-12,3d6 500 gp gems,-
+13-15,3d6 1000 gp gems,-
+16-19,2d4 250 gp art objects,Roll 1d4 times on Magic Item Table A and 1d6 times on Magic Item Table B.
+20-23,2d4 750 gp art objects,Roll 1d4 times on Magic Item Table A and 1d6 times on Magic Item Table B.
+24-26,3d6 500 gp gems,Roll 1d4 times on Magic Item Table A and 1d6 times on Magic Item Table B.
+27-29,3d6 1000 gp gems,Roll 1d4 times on Magic Item Table A and 1d6 times on Magic Item Table B.
+30-35,2d4 250 gp art objects,Roll 1d6 times on Magic Item Table C.
+36-40,2d4 750 gp art objects,Roll 1d6 times on Magic Item Table C.
+41-45,3d6 500 gp gems,Roll 1d6 times on Magic Item Table C.
+46-50,3d6 1000 gp gems,Roll 1d6 times on Magic Item Table C.
+51-54,2d4 250 gp art objects,Roll 1d4 times on Magic Item Table D.
+55-58,2d4 750 gp art objects,Roll 1d4 times on Magic Item Table D.
+59-62,3d6 500 gp gems,Roll 1d4 times on Magic Item Table D.
+63-66,3d6 1000 gp gems,Roll 1d4 times on Magic Item Table D.
+67-68,2d4 250 gp art objects,Roll once on Magic Item Table E.
+69-70,2d4 750 gp art objects,Roll once on Magic Item Table E.
+71-72,3d6 500 gp gems,Roll once on Magic Item Table E.
+73-74,3d6 1000 gp gems,Roll once on Magic Item Table E.
+75-76,2d4 250 gp art objects,Roll once on Magic Item Table F and 1d4 times on Magic Item Table G.
+77-78,2d4 750 gp art objects,Roll once on Magic Item Table F and 1d4 times on Magic Item Table G.
+79-80,3d6 500 gp gems,Roll once on Magic Item Table F and 1d4 times on Magic Item Table G.
+81-82,3d6 1000 gp gems,Roll once on Magic Item Table F and 1d4 times on Magic Item Table G.
+83-85,2d4 250 gp art objects,Roll 1d4 times on Magic Item Table H.
+86-88,2d4 750 gp art objects,Roll 1d4 times on Magic Item Table H.
+89-90,3d6 500 gp gems,Roll 1d4 times on Magic Item Table H.
+91-92,3d6 1000 gp gems,Roll 1d4 times on Magic Item Table H.
+93-94,2d4 250 gp art objects,Roll once on Magic Item Table I.
+95-96,3d6 500 gp gems,Roll once on Magic Item Table I.
+97-98,3d6 1000 gp gems,Roll once on Magic Item Table I.
+99-100,3d6 1000 gp gems,Roll once on Magic Item Table I.

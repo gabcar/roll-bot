@@ -6,7 +6,9 @@ import datetime
 import importlib
 
 import discord
+
 import src.dice
+import src.loot
 
 with open('token') as f:
     TOKEN = f.read()
@@ -41,7 +43,6 @@ def log_message(inmsg):
     except AttributeError:
         guild = ''
         channel = 'DM'
-    
 
     log_message = timestamp + ': Received message\nfrom: {}-{}: "{}"'.format(
         guild,
@@ -52,8 +53,6 @@ def log_message(inmsg):
     return  log_message
 
 def log_action(outmsg):
-    timestamp = '{:%Y-%m-%d_%H-%M-%S}'.format(datetime.datetime.now())
-
     if outmsg:
         log_message = '\nReplied with:\n {}'.format(
             outmsg
@@ -100,7 +99,10 @@ async def on_message(message):
         msg = '> ' + message.author.name + ': ' + message.content + \
             '\n' + src.dice.roll_character(options)
         await channel.send(msg)
-
+    elif command == '!loot':
+        msg = '> ' + message.author.name + ': ' + message.content + \
+            '\n' + src.loot.get_hoard_loot(options)
+        await channel.send(msg)
     # Ignore logging commands that are not for rollbot
     else:
         return
