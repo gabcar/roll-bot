@@ -160,6 +160,7 @@ def roll_dice(n, d):
 
     return r
 
+
 @is_message
 def parse_rolls_to_string(args):
     """Parses rolls to string
@@ -248,6 +249,7 @@ def parse_options(rolls, option):
             return 'Error: Invalid option(s): {}'.format(option)
     except: 
         return 'Error: Invalid option(s): {}'.format(option)
+
 
 @is_message    
 def roll_character(args):

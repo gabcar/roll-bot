@@ -11,7 +11,8 @@ def timed(func):
     def func_wrapper(*args, **kwargs):
         before = time.time()
         out = func(*args, *kwargs)
-        print(time.time() - before)
+        time_elapsed = round(1000 * (time.time() - before), 2)
+        print('Operation time: {}ms'.format(time_elapsed))
         return out
     return func_wrapper
 
@@ -50,9 +51,6 @@ def is_in_interval(i, interval):
 def roll_on_table(file_contents, dice):
     # Calculate treasure
     roll = do_roll_instruction(Rolls([]), dice).sum()
-    # print(roll)
-
-    # print(treasure_table)
     for line in file_contents:
         line_contents = line.split(',')
         if is_in_interval(roll, line_contents[0]):
@@ -95,10 +93,8 @@ def get_gems_or_art(line):
 def get_magic_items(line):
     if line == '-':
         return []
-    # print(line)
     commands = line.replace('Roll ', '').replace('.', '')
     commands = commands.split(' and ')
-    # print(commands)
 
     loot = []
     
@@ -109,14 +105,12 @@ def get_magic_items(line):
         else:
             n = do_roll_instruction(Rolls([]), c[0]).sum()
         table = c[-1]
-        # print(table, n)
 
         path = 'assets/item-tables/magic-items/{}.csv'.format(table)
 
         with open(path) as f:
             table = f. read().splitlines() 
         dice = '1' + table[0].split(',')[0]
-        print(dice)
 
         for _ in range(n):
             line = roll_on_table(table[1:], dice)
@@ -125,7 +119,6 @@ def get_magic_items(line):
         loot.append(line)
     return loot
 
-@timed
 def get_hoard_loot(cr):
     cr_interval = get_cr_interval(int(cr[0]))
 
@@ -147,28 +140,20 @@ def get_hoard_loot(cr):
     # roll on treasur table
     dice = '1' + contents[2].split(',')[0]
     treasure_line = roll_on_table(contents[3:], dice)
-    # print(treasure_line)
     gems_or_art = get_gems_or_art(treasure_line[1])
-    # print(gems_or_art)
     magic_items = get_magic_items(treasure_line[2])
 
     coins = ', '.join(["{}{}".format(v, c) for c, v in coins.items()])
     items = ', '.join(gems_or_art + magic_items)
 
-    print(len(items))
-
     str = 'Coins: {}'.format(coins)
     str += '\nItems: {}'.format(items) * (len(items) > 0)
     str = '```' + str + '```'
-    print(str)
 
     return str # '```\nItems: {}```'.format(coins, items)
 
 
 def main():
-    import time
-    # for i in range(0, 21, 5):
-    #     print(i)
     get_hoard_loot(11)
 
 if __name__ == '__main__':
