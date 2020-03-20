@@ -155,7 +155,14 @@ def get_hoard_loot(cr):
     coins = ', '.join(["{}{}".format(v, c) for c, v in coins.items()])
     items = ', '.join(gems_or_art + magic_items)
 
-    return '```Coins: {}\nItems: {}```'.format(coins, items)
+    print(len(items))
+
+    str = 'Coins: {}'.format(coins)
+    str += '\nItems: {}'.format(items) * (len(items) > 0)
+    str = '```' + str + '```'
+    print(str)
+
+    return str # '```\nItems: {}```'.format(coins, items)
 
 
 def main():
