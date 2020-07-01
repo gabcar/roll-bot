@@ -1,5 +1,6 @@
 import random
 import re
+import shlex
 
 from discord.utils import get
 
@@ -21,7 +22,15 @@ def remove_member(name, members):
 
     return members
 
+def join_commands(options):
+    options = ' '.join(options)
+    options = shlex.split(options)
+
+    return options
+
 def parse_commands(options, members):
+    options = join_commands(options)
+    print('IN PARSE', options)
     for o in options:
         print(o)
         if o[0] == '-':
