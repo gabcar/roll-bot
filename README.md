@@ -92,7 +92,7 @@ Items: 1x Jade (100gp), 1x Coral (100gp), 1x Spinel (100gp), 2x Chrysoberyl (100
 Interpretation: Randomly select a member in the channel for DM duty.
 
 ```
-!randomdm -Lisa#1337 -ForeverDM
+!randomdm -Lisa#1337 -ForeverDM -'Forever DM'
 ```
 
-Interpretation: Randomly select a player for DM duty but exclued Lisa#1337 (no other Lisas) and ForeverDM.
+Interpretation: Randomly select a player for DM duty but exclude `Lisa#1337` (no other Lisas) and `ForeverDM` and `Forever DM`.
