@@ -28,6 +28,11 @@ Available commands:
     - +/-[N]d[D], see options for !roll.  example: !rollme 6d6 d2l +4d4 dh
 "!loot [challenge rating]", returns hoard loot rolled according to the DMG
 (p.133-139). 
+"!randomdm", randomly selects a person for DM duty. 
+  optional:
+    - +[NAME], adds a name to the pot. Useful when a potential DM is not in the channel.
+    - -[NAME], removes a name from the pot, for scenarios when a member should be excluded from the DM pot.
+    - -[NAME#discriminator], removes a name with a discriminator from the pot. This is useful when there are user name overlaps.
 ```
 
 ### Examples
@@ -77,3 +82,17 @@ Output:
 Coins: 900CP, 11000SP, 2500GP, 130PP
 Items: 1x Jade (100gp), 1x Coral (100gp), 1x Spinel (100gp), 2x Chrysoberyl (100gp), 1x Garnet (100gp), 1x Jet (100gp), 1x Amber (100gp), 3x Pearl (100gp), Armor, +1 chain mail
 ```
+
+#### Random DM example
+
+```
+!randomdm
+```
+
+Interpretation: Randomly select a member in the channel for DM duty.
+
+```
+!randomdm -Lisa#1337 -ForeverDM
+```
+
+Interpretation: Randomly select a player for DM duty but exclued Lisa#1337 (no other Lisas) and ForeverDM.

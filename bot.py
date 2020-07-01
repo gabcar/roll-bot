@@ -9,6 +9,7 @@ import discord
 
 import src.dice
 import src.loot
+import src.random_dm
 
 with open('token') as f:
     TOKEN = f.read()
@@ -92,7 +93,6 @@ async def on_message(message):
             msg = '> ' + message.author.name + ': '+ \
                 message.content + '\n' + src.dice.parse_rolls_to_string(options)
         await channel.send(msg)
-        
     # !rollme - Generate character
     elif command == '!rollme':
         # quote input message + output
@@ -103,10 +103,15 @@ async def on_message(message):
         msg = '> ' + message.author.name + ': ' + message.content + \
             '\n' + src.loot.get_hoard_loot(options)
         await channel.send(msg)
+    # random dm
+    elif command == '!randomdm':
+        msg = '> ' + message.author.name + ': ' + message.content + \
+            '\n' + src.random_dm.get_random_dm(options,message.channel)
+        await channel.send(msg)
     # Ignore logging commands that are not for rollbot
     else:
         return
-    
+
     log += log_action(msg)
 
     print(log)
