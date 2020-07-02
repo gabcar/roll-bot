@@ -13,7 +13,7 @@ https://discordapp.com/api/oauth2/authorize?client_id=624952320979107860&permiss
 ```
 Available commands:
 "!roll [N]d[D]", rolls N (<500) dice with D faces and returns sum and sequence.
-  optional:
+  optional arguments:
    - dl: drop lowest
    - d[n]l: drop n lowest
    - dh: drop highest
@@ -22,17 +22,17 @@ Available commands:
    - +/-i, where i is an integer
   example: !roll 6d6 dl d2h +4
 "!rollme", rolls 6 character stats with 4d6 drop lowest strategy for each stat.
-  optional:
+  optional arguments:
     - [N]d[D], determines the stat generation strategy. (4d6 default)
     - dl/d[n]l/dh/d[n]h, see options for !roll.
     - +/-[N]d[D], see options for !roll.  example: !rollme 6d6 d2l +4d4 dh
 "!loot [challenge rating]", returns hoard loot rolled according to the DMG
 (p.133-139). 
 "!randomdm", randomly selects a person for DM duty. 
-  optional:
-    - +[NAME], adds a name to the pot. Useful when a potential DM is not in the channel.
+  optional arguments:
+    - +[NAME], adds a name to the pot. Useful when a potential DM is not in the channel. Use quotation marks to handle users with space(s) in their username.
     - -[NAME], removes a name from the pot, for scenarios when a member should be excluded from the DM pot.
-    - -[NAME#discriminator], removes a name with a discriminator from the pot. This is useful when there are user name overlaps.
+    - -[NAME#discriminator], removes a name with a discriminator from the pot. This is useful when there are username overlaps.
 ```
 
 ### Examples
@@ -92,7 +92,7 @@ Items: 1x Jade (100gp), 1x Coral (100gp), 1x Spinel (100gp), 2x Chrysoberyl (100
 Interpretation: Randomly select a member in the channel for DM duty.
 
 ```
-!randomdm -Lisa#1337 -ForeverDM -'Forever DM'
+!randomdm -Lisa#1337 -ForeverDM +'Forever DM'
 ```
 
-Interpretation: Randomly select a player for DM duty but exclude `Lisa#1337` (no other Lisas) and `ForeverDM` and `Forever DM`.
+Interpretation: Randomly select a player for DM duty but exclude `Lisa#1337` (no other Lisas) and `ForeverDM` and include `Forever DM`.
